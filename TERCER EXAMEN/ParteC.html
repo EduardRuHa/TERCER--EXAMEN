@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tercer Examen, Parte C</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 90%;
+            margin-top: 20px;
+        }
+        .question {
+            margin-bottom: 20px;
+            text-align: left;
+            color: royalblue;
+            font-weight: bold;
+        }
+        label {
+            color: deeppink;
+            cursor: pointer;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        h2.hidden {
+            display: none;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .grande {
+            font-size: 16px;
+            font-weight: bold;
+            color: rgb(0, 0, 0); /* Puedes cambiar el color si lo deseas */
+        }
+        h1 {
+            color: black;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>F Í S I C A</h1>
+        <form id="quizForm">
+            <div id="questionsContainer"></div>
+            <button type="button" onclick="calculateScore()">Finalizar</button>
+        </form>
+        <h2 id="result" class="hidden"></h2>
+    </div>
+    
+    <script>
+        const questions = [
+            { question: "68. La Física se encarga de estudiar a la energía y la:", options: ["A) Materia", "B) Presión", "C) Volumen", "D) Fuerza"], correct: "A) Materia" },
+            { question: "69. Es la cantidad de energía cinética que presentan las moléculas de un cuerpo:", options: ["A) Cinética", "B) Estática", "C) Calor", "D) Temperatura"], correct: "C) Calor" },
+            { question: "70. Científico inglés, físico y matemático, que es considerado como 'El Padre de la Física':", options: ["A) Isaac Newton", "B) Albert Einstein", "C) Thales de Mileto", "D) Johannes Kepler"], correct: "A) Isaac Newton" },
+            { question: "71. Fuerza de atracción de la Tierra sobre cualquier cuerpo que se encuentra sobre su superficie.", options: ["A) Magnética", "B) Gravitacional", "C) Potencial", "D) Cinética"], correct: "B) Gravitacional" },
+            { question: "72. Al decir que polos iguales se rechazan y que polos diferentes se atraen; estamos hablando de:", options: ["A) Ondas", "B) Electricidad", "C) Magnetismo", "D) Cargas"], correct: "C) Magnetismo" },
+            { question: "73. Amplitud, valles y crestas, corresponden a:", options: ["A) Ondas", "B) Cargas", "C) Sonido", "D) Electricidad"], correct: "A) Ondas" },
+            { question: "74. Un alambre tiene menor resistencia eléctrica cuando:", options: ["A) El grosor del cable es mayor", "B) Se disminuye su temperatura", "C) Tiene mayor longitud", "D) Tiene menor longitud"], correct: "D) Tiene menor longitud" },
+            { question: "75. Escala termométrica, llamada del cero absoluto:", options: ["A) Celsius", "B) Kelvin", "C) Fahrenheit", "D) Richter"], correct: "B) Kelvin" },
+            { question: "76. Rayo de luz que rebota sobre una superficie plana:", options: ["A) Refracción", "B) Interferencia", "C) Reflexión", "D) Incandescencia"], correct: "C) Reflexión" },
+            { question: "77. La fuerza de presión es mayor cuando la superficie es:", options: ["A) Mayor", "B) Rugosa", "C) Menor", "D) Máxima"], correct: "C) Menor" },
+            { question: "78. Se pasa del estado líquido al gaseoso:", options: ["A) Sublimación", "B) Evaporación", "C) Condensación", "D) Precipitación"], correct: "B) Evaporación" },
+            { question: "79. Escala basada en la congelación del agua:", options: ["A) Richter", "B) Kelvin", "C) Celsius", "D) Mercalli"], correct: "C) Celsius" },
+            { question: "<h1>Q U Í M I C A</h1>", options: [], correct: "" },
+            { question: "80. Es el resultado de combinar un metal con otro metal.", options: ["A) Ácido", "B) Aleación", "C) Sal", "D) Fusión"], correct: "B) Aleación" },
+            { question: "81. Familia de los elementos Térreos:", options: ["A) II A", "B) IV A", "C) III A", "D) V A"], correct: "C) III A" },
+            { question: "82. El nivel cero en PH indica un nivel de:", options: ["A) Acidez", "B) Básico", "C) Neutro", "D) Alcalino"], correct: "A) Acidez" },
+            { question: "83. ¿Qué indica el número de familia?", options: ["A) El número de órbitas que hay en el átomo", "B) El número de electrones que hay en el núcleo", "C) El número de electrones en el último nivel", "D) El número de electrones totales que giran"], correct: "C) El número de electrones en el último nivel" },
+            { question: "84. Se forma al combinarse un metal y el oxígeno", options: ["A) Base", "B) Hidroxilo", "C) Óxido", "D) Sal"], correct: "C) Óxido" },
+            { question: "85. Grupo al que pertenece el carbohidrato propino.", options: ["A) Alcanos", "B) Alcoholes", "C) Alquenos", "D) Alquinos"], correct: "D) Alquinos" },
+            { question: "86. Producto derivado del petróleo:", options: ["A) Vinagre", "B) Alcohol", "C) Thinner", "D) Anilina"], correct: "C) Thinner" },
+            { question: "87. Son partículas con carga negativa:", options: ["A) Neutrón", "B) Protón", "C) Electrón", "D) Fotón"], correct: "C) Electrón" },
+            { question: "88. Es el número de electrones que le faltan a un átomo para completar su último nivel, o bien, son los electrones que le sobran y que los puede ceder a otro átomo.", options: ["A) Spin", "B) Número de moles", "C) Valencia", "D) Periodo"], correct: "C) Valencia" },
+            { question: "89. Mezcla en que se distinguen sus componentes:", options: ["A) Heterogénea", "B) Compuesta", "C) Simple", "D) Homogénea"], correct: "A) Heterogénea" },
+            { question: "90. Conjunto de elementos que comparten propiedades físicas y químicas.", options: ["A) Metales", "B) Familias", "C) No Metales", "D) Periodos"], correct: "B) Familias" },
+            { question: "91. Los hidrocarburos están compuestos por:", options: ["A) Carbono e hidrógeno", "B) Nitrógeno y carbono", "C) Oxígeno e hidrógeno", "D) Oxígeno y carbono"], correct: "A) Carbono e hidrógeno" },
+            { question: "<h1>HABILIDAD VERBAL</h1>", options: [], correct: "" },
+            { question: "92. Sinónimo de planeta.", options: ["A) Astro", "B) Galaxia", "C) Sol", "D) Cometa"], correct: "A) Astro" },
+            { question: "93. Antónimo de conquistar.", options: ["A) Invadir", "B) Liberar", "C) Perder", "D) Someter"], correct: "B) Liberar" },
+            { question: "94. Aves es a plumas, como:", options: ["A) Hombre es a brazos", "B) Manos es a dedos", "C) Mamífero es a piel", "D) Peces es a escamas"], correct: "D) Peces es a escamas" },
+            { question: "95. Antónimo de inaugurar.", options: ["A) Abrir", "B) Tapar", "C) Sellar", "D) Clausurar"], correct: "D) Clausurar" },
+            { question: "96. Sinónimo de terco.", options: ["A) Necesario", "B) Obstinado", "C) Tranquilo", "D) Meticuloso"], correct: "B) Obstinado" },
+            { question: "97. Una constelación siempre tiene . . .", options: ["A) Ojos negros", "B) Cometas", "C) Planetas", "D) Estrellas"], correct: "D) Estrellas" },
+            { question: "98. Desde las profundidades de la Tierra, emerge . . .", options: ["A) Océanos", "B) Rocas", "C) Magma", "D) Planicies"], correct: "C) Magma" },
+            { question: "99. La vegetación australiana está constituida por una __________ diversa de coníferas y en las áridas __________ del centro predominan cactus.", options: ["A) unión - rutas", "B) gama - zonas", "C) colección - costas", "D) agrupación - costas"], correct: "B) gama - zonas" },
+            { question: "100. Todos los _____ tienen derecho a _____ una carrera.", options: ["A) adultos - obtener", "B) niños - seguir", "C) jóvenes - tener", "D) varones - forzar"], correct: "C) jóvenes - tener" },
+            { question: "101. Si quiere armar _______ el artículo, es necesario que _______ el instructivo.", options: ["A) fácilmente - siga", "B) todo - vea", "C) correctamente - siga", "D) perfectamente - lea"], correct: "C) correctamente - siga" },
+            { question: "102. Los continuos _______ telúricos, preceden siempre al _______ de un volcán.", options: ["A) deslizamientos - brote", "B) sucesos - recinto", "C) movimientos - nacimiento", "D) ruidos - camino"], correct: "C) movimientos - nacimiento" },
+            { question: "103. El incremento _______ de la población en las ciudades ha _______ a los urbanistas modernos a diseñar y construir edificios más elevados.", options: ["A) Notable - recorrido", "B) Considerable - forzado", "C) Gigantesco - provocado", "D) Evidente - entusiasmado"], correct: "B) Considerable - forzado" },
+
+            { question: "<h4>Lee el siguiente texto y contesta las preguntas.</h4>", options: [], correct: "" },
+            { question: "<h4>El viaje alrededor del mundo.</h4>", options: [], correct: "" },
+            { question: "<h4>En la clase de Geografía platicamos sobre cuáles son los continentes que conforman nuestro mundo. Por ello, mi compañero Ismael preguntó cuál era el país más alejado de México. La maestra contestó que el país más alejado de México es la India, que se encuentra en Asia. Con base en ello, la maestra mencionó que la India es nuestro antípoda, es decir, el lugar diametralmente opuesto al nuestro, es decir, al otro lado de la Tierra.</h4>", options: [], correct: "" },
+            { question: "<h4>Por su parte, mi amiga Camila preguntó en cuánto tiempo da la vuelta al mundo un avión. Del fondo del salón se escuchó la voz de Julián -para quien su <span class='grande'>mayor</span> pasión son los aviones- y le explicó a nuestra compañera que todo depende de la clase de avión en que viajemos, porque la velocidad de un jet no es la misma que la de un avión de cuatro motores, que es más lento, y, menos aún, del que, tenga <span class='grande'>solamente</span> dos. Partiendo de la explicación de Julián, la maestra calculó que en un jet que volase rodeando la Tierra por el Ecuador, sin interrupción, tardaría <span class='grande'>aproximadamente</span> treinta horas.</h4>", options: [], correct: "" },
+            { question: "<h4>Posteriormente, la maestra nos contó que, a principios del siglo XVI, el famoso navegante portugués Fernando de Magallanes inició la hazaña de dar la vuelta al mundo, misma que no pudo concluir porque murió antes de completarla; no obstante, los hombres que lo acompañaban finalizaron su deseo y en tres años menos doce días se realizó tal hazaña por primera vez en la historia de la humanidad.</h4>", options: [], correct: "" },
+            { question: "<h4>- ¡Tres años! - exclamamos todos impresionados.</h4>", options: [], correct: "" },
+            { question: "<h4>-Sí- puntualizó la maestra, claro que esos tres años no fueron de navegación continua.</h4>", options: [], correct: "" },
+            { question: "<h4>Magallanes y sus compañeros se quedaban por días, semanas y hasta meses en los lugares que iban conociendo; en ocasiones, incluso tenían que luchar contra tribus salvajes, y fue en manos de una de estas tribus que Magallanes murió antes de poder dar fin a su viaje.</h4>", options: [], correct: "" },
+            { question: "<h4>La expedición salió de Sanlúcar de Barrameda, España, y, tras dar la vuelta al mundo, volvió al lugar de su partida. Magallanes fue el primero que pasó por el estrecho que lleva ahora su nombre, el Estrecho de Magallanes, situado en la punta austral, o sur, del Continente Americano. Ese viaje fue la hazaña más <span class='grande'>extraordinaria</span> del pasado.</h4>", options: [], correct: "" },
+            { question: "<h4>Después de Magallanes, Europa conoció y dominó los caminos del mundo y, aunque hoy ustedes exclaman con asombro: ¡tres años!, lo que Magallanes y su equipo hicieron hace casi cuatrocientos años es uno de los grandes logros de la civilización.</h4>", options: [], correct: "" },
+
+            { question: "104. El tema principal del texto, es:", options: ["A) Una travesía extraordinaria.", "B) Los viajes alrededor del mundo en la antigüedad y en la actualidad.", "C) La expedición de Fernando de Magallanes.", "D) La ubicación de los continentes y los países."], correct: "C) La expedición de Fernando de Magallanes." },
+            { question: "105. Según la lectura, la antípoda del Polo Norte, es:", options: ["A) Sudamérica", "B) La Antártida", "C) El Polo Sur", "D) El Ecuador"], correct: "C) El Polo Sur" },
+            { question: "106. Con los argumentos que Julián da a Camila, se concluye que:", options: ["A) Un avión de cuatro motores es más veloz que un jet.", "B) El jet es el avión más veloz de todos.", "C) Un jet es más veloz que un avión de cuatro motores.", "D) Un avión de cuatro motores es tan veloz como un jet."], correct: "C) Un jet es más veloz que un avión de cuatro motores." },
+            { question: "107. ¿Cuál de las palabras en negritas y subrayadas corresponde a un adverbio de cantidad?", options: ["A) Mayor", "B) Solamente", "C) Aproximadamente", "D) Extraordinaria"], correct: "B) Solamente" },
+            { question: "108. Según el texto, ¿cuál de las afirmaciones es correcta?", options: ["A) Fernando de Magallanes dio la vuelta al mundo en tres años menos 12 días.", "B) Fernando de Magallanes dio la vuelta al mundo en tres años.", "C) En tres años de manera no continúa, Fernando de Magallanes dio la vuelta al mundo.", "D) Fernando de Magallanes no logró concluir la vuelta al mundo."], correct: "D) Fernando de Magallanes no logró concluir la vuelta al mundo." },
+        ];
+
+        const container = document.getElementById("questionsContainer");
+        questions.forEach((q, index) => {
+            const div = document.createElement("div");
+            div.classList.add("question");
+            div.innerHTML = `<p>${q.question}</p>` +
+                q.options.map(option => 
+                    `<label><input type="radio" name="q${index}" value="${option}"> ${option}</label>`
+                ).join("<br>");
+            container.appendChild(div);
+        });
+        
+        function calculateScore() {
+    let score = 0;
+    let allAnswered = true;
+
+    questions.forEach((q, index) => {
+        // Verifica si la pregunta tiene opciones
+        if (q.options.length > 0) {
+            const selected = document.querySelector(`input[name='q${index}']:checked`);
+            if (!selected) {
+                allAnswered = false;
+            } else if (selected.value === q.correct) {
+                score++; // Incrementa el puntaje si la respuesta es correcta
+                selected.parentNode.classList.add("correct");
+            } else {
+                selected.parentNode.classList.add("incorrect");
+            }
+        }
+    });
+
+    if (!allAnswered) {
+        alert("Por favor, responde todas las preguntas.");
+        return;
+    }
+
+    // Ahora el puntaje total es calculado solo con preguntas que tienen opciones
+    document.getElementById("result").innerText = `Puntuación: ${score} de ${questions.filter(q => q.options.length > 0).length}`;
+    document.getElementById("result").classList.remove("hidden");
+}
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tercer Examen, Parte B</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 90%;
+            margin-top: 20px;
+        }
+        .question {
+            margin-bottom: 20px;
+            text-align: left;
+            color: royalblue;
+            font-weight: bold;
+        }
+        label {
+            color: deeppink;
+            cursor: pointer;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        h2.hidden {
+            display: none;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .grande {
+            font-size: 16px;
+            font-weight: bold;
+            color: rgb(0, 0, 0); /* Puedes cambiar el color si lo deseas */
+        }
+        h1 {
+            color: black;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>H I S T O R I A</h1>
+        <form id="quizForm">
+            <div id="questionsContainer"></div>
+            <button type="button" onclick="calculateScore()">Finalizar</button>
+        </form>
+        <h2 id="result" class="hidden"></h2>
+    </div>
+    
+    <script>
+        const questions = [
+            { question: "33. La Venta y Tres Zapotes fueron ciudades de los:", options: ["A) Toltecas", "B) Mayas", "C) Olmecas", "D) Zapotecas"], correct: "C) Olmecas" },
+            { question: "34. Eran hijos de españoles nacidos en la Nueva España:", options: ["A) Criollos", "B) Mulatos", "C) Mestizos", "D) Peninsulares"], correct: "A) Criollos" },
+            { question: "35. Erigieron una especie de columnas decorativas y emblemáticas, mediante las cuales se idealizaba el prototipo de los Guerreros Guardianes.", options: ["A) Teotihuacana", "B) Tolteca", "C) Zapoteca", "D) Mexica"], correct: "B) Tolteca" },
+            { question: "36. Sometimiento a trabajo forzoso para ser cristianizado:", options: ["A) Encomienda", "B) Evangelización", "C) Real Hacienda", "D) Criollización"], correct: "A) Encomienda" },
+            { question: "37. La entrada del Ejército Trigarante, marca:", options: ["A) El inicio a la democracia", "B) El término de la Guerra de Independencia", "C) El fin del Imperio de Maximiliano", "D) Una nueva Monarquía"], correct: "B) El término de la Guerra de Independencia" },
+            { question: "38. En 1836 el presidente Antonio López de Santa Anna firmó el Tratado de Velasco, reconociendo:", options: ["A) La independencia de Texas", "B) La separación de la Iglesia - Estado", "C) La venta de California y Arizona a los EE. UU.", "D) El régimen centralista"], correct: "A) La independencia de Texas" },
+            { question: "39. Favoreció la consumación de la Independencia.", options: ["A) Un acuerdo entre indígenas y españoles", "B) El desgaste y falta de recursos de España", "C) La riqueza que conquistaban los indígenas", "D) Un ejército español fuerte"], correct: "B) El desgaste y falta de recursos de España" },
+            { question: "40. Primeros partidos políticos en México.", options: ["A) Liberal y Conservador", "B) Republicano y Conservador", "C) Liberal y Republicano", "D) Democrático y Liberal"], correct: "A) Liberal y Conservador" },
+            { question: "41. Se considera un régimen dictatorial.", options: ["A) La guerra de reforma", "B) El movimiento de Independencia", "C) El porfiriato", "D) El cardenismo"], correct: "C) El porfiriato" },
+            { question: "42. Derrocó a Porfirio Díaz y asumió la presidencia.", options: ["A) Venustiano Carranza", "B) Francisco I. Madero", "C) Álvaro Obregón", "D) José María Pino Suárez"], correct: "B) Francisco I. Madero" },
+            { question: "43. ¿En qué consiste el mestizaje?", options: ["A) En la mezcla entre una raza", "B) En la mezcla de dos razas", "C) En la mezcla de tres razas o más", "D) En la mezcla entre genes"], correct: "B) En la mezcla de dos razas" },
+            { question: "44. Napoleón III, firma el Tratado de Miramar, reconociendo como emperador de México a:", options: ["A) Iturbide", "B) Guadalupe Victoria", "C) Guerrero", "D) Maximiliano"], correct: "D) Maximiliano" },
+            { question: "<h1>FORMACIÓN CÍVICA Y ÉTICA</h1>", options: [], correct: "" },
+            { question: "45. Maltrato hacia una persona, utilizando alguna objeto o arma para que sea sometida.", options: ["A) Psicoemocional", "B) Social", "C) Físico", "D) Psicológico"], correct: "C) Físico" },
+            { question: "46. Hábitos familiares de generación en generación:", options: ["A) Cultura", "B) Tradición", "C) Civismo", "D) Costumbre"], correct: "A) Cultura" },
+            { question: "47. Representante del Poder Ejecutivo:", options: ["A) Ombudsman", "B) Diputados", "C) Presidente", "D) Senadores"], correct: "C) Presidente" },
+            { question: "48. Las adicciones son:", options: ["A) Una forma de relación", "B) Una forma de la mala vida", "C) Una forma de entender la realidad", "D) Una dependencia física o mental"], correct: "D) Una dependencia física o mental" },
+            { question: "49. Las drogas alteran el funcionamiento de:", options: ["A) El cerebro", "B) Los huesos", "C) El ciclo del sueño", "D) El sistema nervioso"], correct: "A) El cerebro" },
+            { question: "50. Artículo 3° de la Constitución establece que todos:", options: ["A) Podemos ir de un lugar a otro", "B) Tenemos derecho a la educación", "C) Tenemos derecho a trabajar", "D) Tenemos derecho a portar armas"], correct: "B) Tenemos derecho a la educación" },
+            { question: "51. El trabajo digno consiste en tener:", options: ["A) Salario justo y buenas condiciones laborales", "B) Una paga que le agrade al trabajador", "C) Un horario agradable", "D) Vacaciones constantes y periódicas"], correct: "A) Salario justo y buenas condiciones laborales" },
+            { question: "52. La participación democrática exige:", options: ["A) Compromiso, reflexión y tener objetivos claros", "B) Honestidad, respeto y relaciones", "C) Reflexión, participación y competencia", "D) Compromiso, amistad y responsabilidad"], correct: "A) Compromiso, reflexión y tener objetivos claros" },
+            { question: "53. Forma de adquirir la nacionalidad mexicana:", options: ["A) Solicitar asilo político", "B) Tener un pariente mexicano", "C) Adquiriendo carta migratoria", "D) Solicitando la naturalización"], correct: "D) Solicitando la naturalización" },
+            { question: "54. Artículo constitucional que indica la libertad de culto.", options: ["A) 123°", "B) 28°", "C) 24°", "D) 11°"], correct: "C) 24°" },
+            { question: "55. Sinónimo de adicción:", options: ["A) Enfermedad", "B) Esparcimiento", "C) Satisfacción", "D) Dependencia"], correct: "D) Dependencia" },
+            { question: "<h1>B I O L O G Í A</h1>", options: [], correct: "" },
+            { question: "56. Conjunto de tejidos de un cuerpo:", options: ["A) Sistema", "B) Célula", "C) Órgano", "D) Organismo"], correct: "C) Órgano" },
+            { question: "57. Organelo celular que sintetiza las proteínas:", options: ["A) Núcleo", "B) Aparato de Golgi", "C) Ribosoma", "D) Mitocondria"], correct: "C) Ribosoma" },
+            { question: "58. Organelo celular que guarda información genética:", options: ["A) Ribosoma", "B) Núcleo", "C) Retículo endoplásmico", "D) Mitocondria"], correct: "B) Núcleo" },
+            { question: "59. Al conjunto de órganos de un cuerpo, se le llama:", options: ["A) Tejido", "B) Sistema", "C) Órganos", "D) Organismo"], correct: "B) Sistema" },
+            { question: "60. Los aceites vegetales proporcionan:", options: ["A) Vitaminas", "B) Minerales", "C) Lípidos", "D) Proteínas"], correct: "C) Lípidos" },
+            { question: "61. La carne, el huevo y la leche proporcionan:", options: ["A) Vitaminas", "B) Carbohidratos", "C) Hierro", "D) Proteínas"], correct: "D) Proteínas" },
+            { question: "62. Forma de reproducción de organismos simples; se divide en gemación, bipartición y esporulación.", options: ["A) Sexual", "B) Asexual", "C) Bisexual", "D) Heterosexual"], correct: "B) Asexual" },
+            { question: "63. Tipo de reproducción que comprende la unión de los gametos por fecundación interna o externa:", options: ["A) Sexual", "B) Asexual", "C) Bisexual", "D) Heterosexual"], correct: "A) Sexual" },
+            { question: "64. Proceso en que la célula se divide en dos:", options: ["A) Clonación", "B) Mitosis", "C) Meiosis", "D) Esporulación"], correct: "B) Mitosis" },
+            { question: "65. Agentes que producen la sífilis y la gonorrea:", options: ["A) Virus", "B) Bacilos", "C) Gérmenes", "D) Bacterias"], correct: "D) Bacterias" },
+            { question: "66. Nuestros antepasados curaban con tés, practicando:", options: ["A) Espiritismo", "B) Magia", "C) Creencias", "D) Herbolaria"], correct: "D) Herbolaria" },
+            { question: "67. Unidad estructural y fisiológica de los seres vivos:", options: ["A) La célula", "B) La piel", "C) Órganos", "D) Ciencia"], correct: "A) La célula" },
+        ];
+
+        const container = document.getElementById("questionsContainer");
+        questions.forEach((q, index) => {
+            const div = document.createElement("div");
+            div.classList.add("question");
+            div.innerHTML = `<p>${q.question}</p>` +
+                q.options.map(option => 
+                    `<label><input type="radio" name="q${index}" value="${option}"> ${option}</label>`
+                ).join("<br>");
+            container.appendChild(div);
+        });
+        
+        function calculateScore() {
+    let score = 0;
+    let allAnswered = true;
+
+    questions.forEach((q, index) => {
+        // Verifica si la pregunta tiene opciones
+        if (q.options.length > 0) {
+            const selected = document.querySelector(`input[name='q${index}']:checked`);
+            if (!selected) {
+                allAnswered = false;
+            } else if (selected.value === q.correct) {
+                score++; // Incrementa el puntaje si la respuesta es correcta
+                selected.parentNode.classList.add("correct");
+            } else {
+                selected.parentNode.classList.add("incorrect");
+            }
+        }
+    });
+
+    if (!allAnswered) {
+        alert("Por favor, responde todas las preguntas.");
+        return;
+    }
+
+    // Ahora el puntaje total es calculado solo con preguntas que tienen opciones
+    document.getElementById("result").innerText = `Puntuación: ${score} de ${questions.filter(q => q.options.length > 0).length}`;
+    document.getElementById("result").classList.remove("hidden");
+}
+
+    </script>
+</body>
+</html>
